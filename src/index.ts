@@ -1,4 +1,5 @@
 import 'phaser';
+import OpeningScene from './levels';
 
 declare var Phaser: any;
 
@@ -12,29 +13,14 @@ class MagnificantGame {
             height: 600,
             physics: {
                 default: 'arcade',
-                arcade: {
-                    gravity: { y: 200 }
-                }
+                arcade: {}
             },
-            scene: {
-                preload: this.preload,
-                create: this.create
-            }
+            scene: [OpeningScene]
         };
     }
 
     run = () => {
         this.game = new Phaser.Game(this.config);
-    }
-
-    preload = function(this: any) {
-        this.load.image('sky', 'http://labs.phaser.io/assets/skies/space3.png');
-        this.load.image('logo', 'http://labs.phaser.io/assets/sprites/phaser3-logo.png');
-        this.load.image('red', 'http://labs.phaser.io/assets/particles/red.png');
-    }
-
-    create = function(this: any) {
-        this.add.sprite(100, 100, 'logo');
     }
 }
 const main = new MagnificantGame();
