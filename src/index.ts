@@ -1,9 +1,8 @@
 import 'phaser';
-import OpeningScene from './levels';
+import MenuScene from './scenes/MenuScene';
 
-declare var Phaser: any;
 
-class MagnificantGame {
+class MagnificentGame {
     config: any;
     game: any;
     constructor() {
@@ -15,7 +14,7 @@ class MagnificantGame {
                 default: 'arcade',
                 arcade: {}
             },
-            scene: [OpeningScene]
+            scene: [MenuScene]
         };
     }
 
@@ -23,5 +22,6 @@ class MagnificantGame {
         this.game = new Phaser.Game(this.config);
     }
 }
-const main = new MagnificantGame();
+
+const main = new MagnificentGame();
 main.run();
