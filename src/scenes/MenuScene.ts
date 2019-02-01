@@ -13,20 +13,9 @@ export default class MenuScene extends Phaser.Scene {
       Phaser.Input.Keyboard.KeyCodes.ENTER
     );
     this.startKey.isDown = false;
-    this.initGlobalData();
-  }
-
-  preload(): void {
-    this.load.pack(
-        "preload",
-        "./assets/pack.json",
-        "preload"
-    );
   }
 
   create(): void {
-    this.add.image(0, 0, "title").setOrigin(0, 0);
-
     this.bitmapTexts.push(
       this.add.bitmapText(
         this.sys.canvas.width / 2 - 200,
@@ -42,9 +31,5 @@ export default class MenuScene extends Phaser.Scene {
     if (this.startKey.isDown) {
       this.scene.start("OpeningScene");
     }
-  }
-
-  private initGlobalData(): void {
-    this.registry.set("spawn", { x: 40, y: 40, dir: "down" });
   }
 }

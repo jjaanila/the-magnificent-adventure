@@ -5,9 +5,10 @@
     "module": "CommonJS",                 /* Specify module code generation: 'none', 'commonjs', 'amd', 'system', 'umd', 'es2015', or 'ESNext'. */
     "sourceMap": true,                    /* Generates corresponding '.map' file. */
     "typeRoots" : ["./node_modules/@types", "./typings"],
+    "moduleResolution": "node",
 
     /* Strict Type-Checking Options */
-    "noImplicitAny": true,               /* Raise error on expressions and declarations with an implied 'any' type. */
+    "noImplicitAny": false,               /* Raise error on expressions and declarations with an implied 'any' type. */
     "strict": false                       /* Enable all strict type-checking options. */
   }
 }
