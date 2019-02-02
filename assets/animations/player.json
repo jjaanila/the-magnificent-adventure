@@ -39,6 +39,19 @@
       "frameRate": 4,
       "skipMissedFrames": false,
       "showOnStart": true
+    },
+    {
+      "key": "swimming",
+      "frames": {
+        "typeOfGeneration": "generateFrameNumbers",
+        "key": "swimmingSpritesheet",
+        "start": 0,
+        "end": 3
+      },
+      "repeat": -1,
+      "frameRate": 2,
+      "skipMissedFrames": false,
+      "showOnStart": true
     }
   ]
 }

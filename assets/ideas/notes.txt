@@ -1,0 +1,12 @@
+Highest priority
+
+- Water collision: Swim? Instant drowning? Block?
+- Structure/obstruction collision: block.
+- Finish first map
+- Fog of war or consider larger map and limited player view
+- NPCs
+- Quests
+- Items and Inventory
+- More maps
+
+Lowest priority

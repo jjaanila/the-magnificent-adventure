@@ -3,6 +3,7 @@ import Player from '../objects/player/Player';
 export default class OpeningScene extends Phaser.Scene {
   private map: Phaser.Tilemaps.Tilemap;
   private terrainTileset: Phaser.Tilemaps.Tileset;
+  private waterLayer: Phaser.Tilemaps.StaticTilemapLayer;
   private terrain1Layer: Phaser.Tilemaps.StaticTilemapLayer;
   private terrain2Layer: Phaser.Tilemaps.StaticTilemapLayer;
   private structureTileset: Phaser.Tilemaps.Tileset;
@@ -22,6 +23,12 @@ export default class OpeningScene extends Phaser.Scene {
   create(): void {
     this.map = this.make.tilemap({ key: "openingLevel" });
     this.terrainTileset = this.map.addTilesetImage("outdoorsTerrainTiles");
+    this.waterLayer = this.map.createStaticLayer(
+      "Water",
+      this.terrainTileset,
+      0,
+      0
+    );
     this.terrain1Layer = this.map.createStaticLayer(
       "Terrain 1",
       this.terrainTileset,
@@ -40,15 +47,24 @@ export default class OpeningScene extends Phaser.Scene {
       this.registry.get("spawn").y,
       "playerSpritesheet"
     );
-    // set collision for tiles with the property collide set to true
-    //this.structureLayer.setCollisionByProperty({ collide: true });
-    this.cameras.main.startFollow(this.player);
-    this.cameras.main.setBounds(
-      0,
-      0,
-      this.map.widthInPixels,
-      this.map.heightInPixels
+    this.physics.add.overlap(
+      this.player,
+      this.waterLayer,
+      this.onCreatureEnteredWater,
+      this.hasCreatureEnteredWater,
+      this
     );
+  }
+
+  hasCreatureEnteredWater(creature: Player, waterLayer: any): boolean {
+    if (waterLayer.index !== -1) {
+      return true;
+    }
+    creature.setIsSwimming(false);
+  }
+
+  onCreatureEnteredWater(creature: Player, waterLayer: Phaser.Tilemaps.StaticTilemapLayer): void {
+    creature.setIsSwimming(true);
   }
 
   update(): void {

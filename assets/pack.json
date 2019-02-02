@@ -27,6 +27,15 @@
         }
       },
       {
+        "type": "spritesheet",
+        "key": "swimmingSpritesheet",
+        "url": "assets/tiles/bubble.png",
+        "frameConfig": {
+          "frameWidth": 16,
+          "frameHeight": 16
+        }
+      },
+      {
         "type": "json",
         "key": "playerAnimationJSON",
         "url": "assets/animations/player.json"
