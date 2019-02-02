@@ -54,6 +54,10 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.body.velocity.x = this.body.velocity.y === 0  ?  this.body.velocity.x : 0;
   }
 
+  private shouldStartAnimation(newAnimKey: string): boolean {
+    return (newAnimKey && !this.anims.isPlaying) || (newAnimKey && (!this.anims.currentAnim || this.anims.currentAnim.key !== newAnimKey));
+  }
+
   private handleAnimations(): void {
     let newAnimKey = this.anims.currentAnim && this.anims.currentAnim.key;
     if (this.body.velocity.y < 0) {
@@ -73,11 +77,7 @@ export default class Player extends Phaser.GameObjects.Sprite {
         newAnimKey = "playerWalkDownLeft";
       }
     } else {
-      if (this.body.velocity.x === 0) {
-        // standing still
-        this.setFrame(12);
-        this.anims.stop();
-      } else if (this.body.velocity.x > 0) {
+      if (this.body.velocity.x > 0) {
         this.setFlipX(false); // Walking right
         newAnimKey = "playerWalkHorizontally";
       } else if (this.body.velocity.x < 0) {
@@ -85,7 +85,11 @@ export default class Player extends Phaser.GameObjects.Sprite {
         newAnimKey = "playerWalkHorizontally";
       }
     }
-    if (newAnimKey && (!this.anims.currentAnim || this.anims.currentAnim.key !== newAnimKey)) {
+    if (this.body.velocity.x === 0 && this.body.velocity.y === 0) {
+      // standing still
+      this.setFrame(12);
+      this.anims.stop();
+    } else if (this.shouldStartAnimation(newAnimKey)) {
       this.anims.play(newAnimKey);
     }
   }
