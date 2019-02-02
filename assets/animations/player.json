@@ -1,0 +1,44 @@
+
+{
+"anims": [
+    {
+      "key": "playerWalkUp",
+      "frames": {
+        "typeOfGeneration": "generateFrameNumbers",
+        "key": "playerSpritesheet",
+        "start": 1,
+        "end": 2
+      },
+      "repeat": -1,
+      "frameRate": 4,
+      "skipMissedFrames": false,
+      "showOnStart": true
+    },
+    {
+      "key": "playerWalkDown",
+      "frames": {
+        "typeOfGeneration": "generateFrameNumbers",
+        "key": "playerSpritesheet",
+        "start": 14,
+        "end": 15
+      },
+      "repeat": -1,
+      "frameRate": 4,
+      "skipMissedFrames": false,
+      "showOnStart": true
+    },
+    {
+      "key": "playerWalkHorizontally",
+      "frames": {
+        "typeOfGeneration": "generateFrameNumbers",
+        "key": "playerSpritesheet",
+        "start": 7,
+        "end": 8
+      },
+      "repeat": -1,
+      "frameRate": 4,
+      "skipMissedFrames": false,
+      "showOnStart": true
+    }
+  ]
+}

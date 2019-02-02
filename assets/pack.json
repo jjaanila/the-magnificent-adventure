@@ -19,12 +19,17 @@
       },
       {
         "type": "spritesheet",
-        "key": "player",
+        "key": "playerSpritesheet",
         "url": "assets/tiles/player.png",
         "frameConfig": {
-          "frameWidth": 16,
-          "frameHeight": 16
+          "frameWidth": 36,
+          "frameHeight": 36
         }
+      },
+      {
+        "type": "json",
+        "key": "playerAnimationJSON",
+        "url": "assets/animations/player.json"
       }
     ]
   }

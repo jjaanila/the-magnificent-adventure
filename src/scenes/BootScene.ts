@@ -1,7 +1,9 @@
+import AnimationHelper from '../AnimationHelper';
 
 export default class BootScene extends Phaser.Scene {
   private loadingBar: Phaser.GameObjects.Graphics;
   private progressBar: Phaser.GameObjects.Graphics;
+  private animationHelperInstance: AnimationHelper;
 
   constructor() {
     super({
@@ -34,6 +36,7 @@ export default class BootScene extends Phaser.Scene {
     this.load.on(
       "complete",
       () => {
+        this.animationHelperInstance = new AnimationHelper(this, this.loadAnimations());
         this.progressBar.destroy();
         this.loadingBar.destroy();
       },
@@ -49,7 +52,11 @@ export default class BootScene extends Phaser.Scene {
   }
 
   update(): void {
-    this.scene.start("OpeningScene");
+    this.scene.start("MenuScene");
+  }
+
+  private loadAnimations(): {}[] {
+    return this.cache.json.get("playerAnimationJSON").anims;
   }
 
   private createLoadingbar(): void {

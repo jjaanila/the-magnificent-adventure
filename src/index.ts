@@ -4,18 +4,21 @@ import MenuScene from "./scenes/MenuScene";
 import OpeningScene from "./scenes/OpeningScene";
 
 class MagnificentGame {
-  config: any;
-  game: any;
+  config: GameConfig;
+  game: Phaser.Game;
   constructor() {
     this.config = {
       type: Phaser.AUTO,
-      width: 800,
-      height: 600,
+      width: 1120,
+      height: 672,
       physics: {
         default: 'arcade',
         arcade: {}
       },
-      scene: [BootScene, MenuScene, OpeningScene]
+      scene: [BootScene, MenuScene, OpeningScene],
+      render: {
+        pixelArt: true
+      }
     };
   }
 
