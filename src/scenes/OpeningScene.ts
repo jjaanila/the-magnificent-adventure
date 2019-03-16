@@ -3,9 +3,10 @@ import Player from '../objects/player/Player';
 export default class OpeningScene extends Phaser.Scene {
   private map: Phaser.Tilemaps.Tilemap;
   private terrainTileset: Phaser.Tilemaps.Tileset;
-  private waterLayer: Phaser.Tilemaps.StaticTilemapLayer;
-  private terrain1Layer: Phaser.Tilemaps.StaticTilemapLayer;
-  private terrain2Layer: Phaser.Tilemaps.StaticTilemapLayer;
+  private eotlLayer: Phaser.Tilemaps.StaticTilemapLayer;
+  private groundLayer: Phaser.Tilemaps.StaticTilemapLayer;
+  private overlappingLayer: Phaser.Tilemaps.StaticTilemapLayer;
+  private obstructionsLayer: Phaser.Tilemaps.StaticTilemapLayer;
   private structureTileset: Phaser.Tilemaps.Tileset;
   private structureLayer: Phaser.Tilemaps.StaticTilemapLayer;
   private player: Player;
@@ -23,20 +24,28 @@ export default class OpeningScene extends Phaser.Scene {
   create(): void {
     this.map = this.make.tilemap({ key: "openingLevel" });
     this.terrainTileset = this.map.addTilesetImage("outdoorsTerrainTiles");
-    this.waterLayer = this.map.createStaticLayer(
-      "Water",
+    this.eotlLayer = this.map.createStaticLayer(
+      "End of the world",
       this.terrainTileset,
       0,
       0
     );
-    this.terrain1Layer = this.map.createStaticLayer(
-      "Terrain 1",
+    this.groundLayer = this.map.createStaticLayer(
+      "Ground",
       this.terrainTileset,
       0,
       0
     );
-    this.terrain2Layer = this.map.createStaticLayer(
-      "Terrain 2",
+    this.obstructionsLayer = this.map.createStaticLayer(
+      "Obstructions",
+      this.terrainTileset,
+      0,
+      0
+    );
+    this.obstructionsLayer.setName("obstructionsLayer");
+    this.obstructionsLayer.setCollisionBetween(1, 10000, true);
+    this.overlappingLayer = this.map.createStaticLayer(
+      "Overlapping",
       this.terrainTileset,
       0,
       0
@@ -47,15 +56,17 @@ export default class OpeningScene extends Phaser.Scene {
       this.registry.get("spawn").y,
       "playerSpritesheet"
     );
+    this.player.body.collideWorldBounds = true;
     this.physics.add.overlap(
       this.player,
-      this.waterLayer,
+      this.eotlLayer,
       this.onCreatureEnteredWater,
       this.hasCreatureEnteredWater,
       this
     );
   }
 
+  // FIXME: Checks collision for every tile, and returns varying indices in a burst. Should setIsSwimming only once per update
   hasCreatureEnteredWater(creature: Player, waterLayer: any): boolean {
     if (waterLayer.index !== -1) {
       return true;
@@ -68,6 +79,7 @@ export default class OpeningScene extends Phaser.Scene {
   }
 
   update(): void {
+    this.physics.collide(this.player, this.obstructionsLayer);
     this.player.update();
   }
 

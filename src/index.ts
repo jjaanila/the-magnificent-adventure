@@ -9,7 +9,7 @@ class MagnificentGame {
   constructor() {
     this.config = {
       type: Phaser.AUTO,
-      width: 1120,
+      width: 1100,
       height: 672,
       physics: {
         default: 'arcade',

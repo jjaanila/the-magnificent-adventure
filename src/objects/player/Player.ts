@@ -1,9 +1,12 @@
 
 export default class Player extends Phaser.GameObjects.Sprite {
+  private walkingVelocity: number = 140;
+  private swimmingVelocity: number = 70;
+
   private currentScene: Phaser.Scene;
   private health: number;
   private keys: Map<string, Phaser.Input.Keyboard.Key>;
-  private velocity: number = 140;
+  private velocity: number = this.walkingVelocity;
   public isSwimming = false;
 
   constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | integer) {
@@ -109,5 +112,6 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
   public setIsSwimming(isSwimming: boolean): void {
     this.isSwimming = isSwimming;
+    this.velocity = this.isSwimming ? this.swimmingVelocity : this.walkingVelocity;
   }
 }

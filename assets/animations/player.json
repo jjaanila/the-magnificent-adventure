@@ -49,7 +49,7 @@
         "end": 3
       },
       "repeat": -1,
-      "frameRate": 2,
+      "frameRate": 5,
       "skipMissedFrames": false,
       "showOnStart": true
     }
