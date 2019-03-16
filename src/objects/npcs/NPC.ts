@@ -1,29 +1,33 @@
+import { NPCAction, NPCActionWait, NPCActionTravel } from './npcActions';
 
-export default class Player extends Phaser.GameObjects.Sprite {
+export default class NPC extends Phaser.GameObjects.Sprite {
   private walkingVelocity: number = 140;
   private swimmingVelocity: number = 70;
-
   private currentScene: Phaser.Scene;
-  private keys: Map<string, Phaser.Input.Keyboard.Key>;
+
   private velocity: number = this.walkingVelocity;
+  private currentAction: NPCAction | undefined;
+  public name: string;
   public isSwimming = false;
 
-  constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | integer) {
+  constructor(
+    name: string,
+    scene: Phaser.Scene,
+    x: number,
+    y: number,
+    texture: string,
+    frame?: string | integer
+    ) {
     super(scene, x, y, texture, frame);
+    this.name = name;
     this.currentScene = scene;
     this.init();
     this.currentScene.add.existing(this);
   }
 
-  init(): void {
+  public init(): void {
     this.setOrigin(0.5, 0.5);
     this.setFlipX(false);
-    this.keys = new Map([
-      ["LEFT", this.currentScene.input.keyboard.addKey("LEFT")],
-      ["RIGHT", this.currentScene.input.keyboard.addKey("RIGHT")],
-      ["DOWN", this.currentScene.input.keyboard.addKey("DOWN")],
-      ["UP", this.currentScene.input.keyboard.addKey("UP")]
-    ]);
 
     this.currentScene.physics.world.enable(this);
     this.body.setSize(10, 10);
@@ -31,36 +35,29 @@ export default class Player extends Phaser.GameObjects.Sprite {
     this.setFrame(12);
   }
 
-  update(): void {
-    this.handleInput();
+  public update(): void {
+    this.handleActions();
     this.handleAnimations();
-  }
-
-  handleInput(): void {
-    if (this.keys.get("LEFT").isDown) {
-      this.body.velocity.x = -this.velocity;
-    }
-    else if (this.keys.get("RIGHT").isDown) {
-      this.body.velocity.x = this.velocity;
-    }
-    else {
-      this.body.velocity.x = 0;
-    }
-    if (this.keys.get("UP").isDown) {
-      this.body.velocity.y = -this.velocity;
-    }
-    else if (this.keys.get("DOWN").isDown) {
-      this.body.velocity.y = this.velocity;
-    }
-    else {
-      this.body.velocity.y = 0;
-    }
-    // Disable diagonal movement
-    this.body.velocity.x = this.body.velocity.y === 0  ?  this.body.velocity.x : 0;
   }
 
   private shouldStartAnimation(newAnimKey: string): boolean {
     return (newAnimKey && !this.anims.isPlaying) || (newAnimKey && (!this.anims.currentAnim || this.anims.currentAnim.key !== newAnimKey));
+  }
+
+  private handleActions(): void {
+    if (this.currentAction) {
+      this.currentAction.act();
+    } else {
+      this.wander();
+    }
+  }
+
+  private wander(): void {
+    switch (Math.round(Math.random())) {
+      case 0:
+
+    }
+    const actionClass = [NPCActionWait, NPCActionTravel]
   }
 
   private getWalkingAnimKey(): string | undefined {
@@ -93,7 +90,9 @@ export default class Player extends Phaser.GameObjects.Sprite {
 
   private handleAnimations(): void {
     if (this.isSwimming) {
-      this.shouldStartAnimation("swimming") && this.anims.play("swimming");
+      if (this.shouldStartAnimation("swimming")) {
+        this.anims.play("swimming");
+      }
       return;
     }
     if (this.body.velocity.x === 0 && this.body.velocity.y === 0) {

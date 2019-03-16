@@ -13,7 +13,9 @@ class MagnificentGame {
       height: 672,
       physics: {
         default: 'arcade',
-        arcade: {}
+        arcade: {
+          debug: true,
+        }
       },
       scene: [BootScene, MenuScene, OpeningScene],
       render: {

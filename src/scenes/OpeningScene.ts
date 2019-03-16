@@ -1,4 +1,5 @@
 import Player from '../objects/player/Player';
+import NPC from '../objects/npcs/NPC';
 
 export default class OpeningScene extends Phaser.Scene {
   private map: Phaser.Tilemaps.Tilemap;
@@ -7,9 +8,8 @@ export default class OpeningScene extends Phaser.Scene {
   private groundLayer: Phaser.Tilemaps.StaticTilemapLayer;
   private overlappingLayer: Phaser.Tilemaps.StaticTilemapLayer;
   private obstructionsLayer: Phaser.Tilemaps.StaticTilemapLayer;
-  private structureTileset: Phaser.Tilemaps.Tileset;
-  private structureLayer: Phaser.Tilemaps.StaticTilemapLayer;
   private player: Player;
+  private mikeNpc: NPC;
 
   constructor() {
     super({
@@ -64,6 +64,14 @@ export default class OpeningScene extends Phaser.Scene {
       this.hasCreatureEnteredWater,
       this
     );
+
+    this.mikeNpc = new NPC(
+      'Mike',
+      this,
+      16 * 3,
+      16 * 34,
+      "playerSpritesheet"
+    );
   }
 
   // FIXME: Checks collision for every tile, and returns varying indices in a burst. Should setIsSwimming only once per update
@@ -72,6 +80,7 @@ export default class OpeningScene extends Phaser.Scene {
       return true;
     }
     creature.setIsSwimming(false);
+    return false;
   }
 
   onCreatureEnteredWater(creature: Player, waterLayer: Phaser.Tilemaps.StaticTilemapLayer): void {
