@@ -1,12 +1,24 @@
 Highest priority
 
-- Water collision: Swim? Instant drowning? Block?
-- Structure/obstruction collision: block.
-- Finish first map
-- Fog of war or consider larger map and limited player view
-- NPCs
-- Quests
-- Items and Inventory
-- More maps
+      - Water collision
+DONE    - Allow swimming and change texture
+        - Fix flickering collision detection on border areas
+        - Drowning
+        - Some special event if drowns in the pond in OpeningScene
+DONE  - Structure/obstruction collision: block.
+      - Finish first map
+      - Fog of war or consider larger map and limited player view
+      - NPCs
+DONE    - Base for "wandering" NPCs
+        - Personalized NPCs for the first Scene
+        - NPC - Player interactions
+          - Speak
+          - Fight?
+      - Quests
+      - Items and Inventory
+      - More maps
 
 Lowest priority
+
+DONE
+- Structure/obstruction collision: block.

@@ -4,8 +4,11 @@ export type NPCActionType = 'wait' | 'travel' | 'speakToX' | 'die';
 
 export class NPCAction {
   public type: NPCActionType;
-  constructor(type: NPCActionType) {
+  public npc: NPC;
+
+  constructor(type: NPCActionType, npc: NPC) {
     this.type = type;
+    this.npc = npc;
   }
 
   /**
@@ -24,23 +27,32 @@ export type NPCActionTravelDestination = {
 
 export class NPCActionTravel extends NPCAction {
   private destination: NPCActionTravelDestination;
-  private npc: NPC;
+  private stopAt: Date | undefined;
 
-  constructor(type: NPCActionType, npc: NPC, destination: NPCActionTravelDestination) {
-    super(type);
+  constructor(npc: NPC, destination: NPCActionTravelDestination, stopTimeoutSeconds?: number) {
+    super('travel', npc);
     this.destination = destination;
-    this.npc = npc;
+    if (stopTimeoutSeconds !== undefined && stopTimeoutSeconds > 0) {
+      const stopAt = new Date();
+      stopAt.setSeconds(stopAt.getSeconds() + stopTimeoutSeconds);
+      this.stopAt = stopAt;
+    }
   }
 
   public act(): boolean {
     if (this.hasEnded()) {
+      this.npc.stop();
       return true;
     }
+    this.npc.moveTo(this.destination);
     return false;
   }
 
   private hasEnded(): boolean {
-    return Math.abs(this.destination.x - this.npc.x) < 5 && Math.abs(this.destination.y - this.npc.y) < 5; // I shall name this CloseEnough™
+    if (this.stopAt && new Date() > this.stopAt) {
+      return true;
+    }
+    return Math.abs(this.destination.x - this.npc.x) < 2 && Math.abs(this.destination.y - this.npc.y) < 2; // I shall name this CloseEnough™
   }
 }
 
@@ -48,8 +60,8 @@ export class NPCActionWait extends NPCAction {
   private seconds: number;
   private startTime: Date;
 
-  constructor(type: NPCActionType, seconds: number) {
-    super(type);
+  constructor(npc: NPC, seconds: number) {
+    super('wait', npc);
     this.seconds = seconds;
     this.startTime = new Date();
   }
@@ -67,15 +79,15 @@ export class NPCActionWait extends NPCAction {
 }
 
 export class NPCActionSpeakToX extends NPCAction {
-  constructor() {
-    super('speakToX');
+  constructor(npc: NPC) {
+    super('speakToX', npc);
     throw new Error('Not implemented');
   }
 }
 
 export class NPCActionDie extends NPCAction {
-  constructor() {
-    super('die');
+  constructor(npc: NPC, ) {
+    super('die', npc);
     throw new Error('Not implemented');
   }
 }

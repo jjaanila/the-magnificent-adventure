@@ -1,14 +1,22 @@
 import { NPCAction, NPCActionWait, NPCActionTravel } from './npcActions';
 
 export default class NPC extends Phaser.GameObjects.Sprite {
-  private walkingVelocity: number = 140;
+  private MAX_WANDER_WAIT_SECONDS = 3;
+  private MIN_WANDER_WAIT_SECONDS = 2;
+  private MAX_WANDER_DISTANCE = 40;
+  private MIN_WANDER_DISTANCE = 10;
+  
+  private walkingVelocity: number = 5;
   private swimmingVelocity: number = 70;
   private currentScene: Phaser.Scene;
-
-  private velocity: number = this.walkingVelocity;
   private currentAction: NPCAction | undefined;
+  private lastWanderAction: NPCAction;
+
+  public velocity: number = this.walkingVelocity;
   public name: string;
   public isSwimming = false;
+
+  
 
   constructor(
     name: string,
@@ -41,47 +49,56 @@ export default class NPC extends Phaser.GameObjects.Sprite {
   }
 
   private shouldStartAnimation(newAnimKey: string): boolean {
-    return (newAnimKey && !this.anims.isPlaying) || (newAnimKey && (!this.anims.currentAnim || this.anims.currentAnim.key !== newAnimKey));
+    const nothingWasPlaying: boolean = Boolean(newAnimKey) && !this.anims.isPlaying || !this.anims.currentAnim;
+    const isNewAnimation: boolean = Boolean(newAnimKey) && (this.anims.currentAnim && this.anims.currentAnim.key !== newAnimKey);
+    return nothingWasPlaying || isNewAnimation;
   }
 
   private handleActions(): void {
     if (this.currentAction) {
-      this.currentAction.act();
+      const hasActionEnded = this.currentAction.act();
+      if (hasActionEnded)  {
+        this.currentAction = undefined;
+      }
     } else {
       this.wander();
     }
   }
 
   private wander(): void {
-    switch (Math.round(Math.random())) {
-      case 0:
-
+    if (this.lastWanderAction instanceof NPCActionWait) {
+      const distance = (Math.round(Math.random()) ? -1 : 1) * Math.round(Math.random() * (this.MAX_WANDER_DISTANCE - this.MIN_WANDER_DISTANCE) + this.MIN_WANDER_DISTANCE);
+      const xOrY = Boolean(Math.round(Math.random()));
+      this.currentAction = new NPCActionTravel(this, {
+        x: this.body.center.x + (xOrY ? distance : 0),
+        y: this.body.center.y + (!xOrY ? distance : 0)
+      },
+      5.0);
     }
-    const actionClass = [NPCActionWait, NPCActionTravel]
+    else {
+      this.currentAction = new NPCActionWait(this, Math.round(
+        Math.random() * (this.MAX_WANDER_WAIT_SECONDS - this.MIN_WANDER_WAIT_SECONDS) + this.MIN_WANDER_WAIT_SECONDS
+      ));
+    }
+    this.lastWanderAction = this.currentAction;
   }
 
   private getWalkingAnimKey(): string | undefined {
-    if (this.body.velocity.y < 0) {
-      if (this.body.velocity.x === 0) {
+    const velocityX = Math.round(this.body.velocity.x);
+    const velocityY = Math.round(this.body.velocity.y);
+    if (velocityY < 0) {
+      if (velocityX === 0) {
         return "playerWalkUp";
-      } else if (this.body.velocity.x > 0) {
-        return "playerWalkUpRight";
-      } else if (this.body.velocity.x < 0) {
-        return "playerWalkUpLeft";
       }
-    } else if (this.body.velocity.y > 0) {
-      if (this.body.velocity.x === 0) {
+    } else if (velocityY > 0) {
+      if (velocityX === 0) {
         return "playerWalkDown";
-      } else if (this.body.velocity.x > 0) {
-        return "playerWalkDownRight";
-      } else if (this.body.velocity.x < 0) {
-        return "playerWalkDownLeft";
       }
     } else {
-      if (this.body.velocity.x > 0) {
+      if (velocityX > 0) {
         this.setFlipX(false); // Walking right
         return "playerWalkHorizontally";
-      } else if (this.body.velocity.x < 0) {
+      } else if (velocityX < 0) {
         this.setFlipX(true); // Walking left by reusing sprite playerWalkHorizontally
         return "playerWalkHorizontally";
       }
@@ -105,6 +122,21 @@ export default class NPC extends Phaser.GameObjects.Sprite {
     if (walkingAnimKey && this.shouldStartAnimation(walkingAnimKey)) {
       this.anims.play(walkingAnimKey);
     }    
+  }
+
+  public moveTo(destination: {x: number, y: number}) {
+    this.currentScene.physics.moveTo(this, destination.x, destination.y, this.velocity);
+  }
+
+  public stop() {
+    this.body.reset(this.body.center.x, this.body.center.y);
+  }
+
+  public onCollision() {
+    if (this.currentAction && this.currentAction instanceof NPCActionTravel) {
+      this.currentAction = undefined;
+      this.stop();
+    }
   }
 
   public setIsSwimming(isSwimming: boolean): void {

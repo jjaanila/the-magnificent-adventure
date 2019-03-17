@@ -1,6 +1,6 @@
 
 export default class Player extends Phaser.GameObjects.Sprite {
-  private walkingVelocity: number = 140;
+  private walkingVelocity: number = 100;
   private swimmingVelocity: number = 70;
 
   private currentScene: Phaser.Scene;
@@ -37,19 +37,23 @@ export default class Player extends Phaser.GameObjects.Sprite {
   }
 
   handleInput(): void {
-    if (this.keys.get("LEFT").isDown) {
+    const left = this.keys.get("LEFT");
+    const right = this.keys.get("RIGHT");
+    const up = this.keys.get("UP");
+    const down = this.keys.get("DOWN");
+    if (left && left.isDown) {
       this.body.velocity.x = -this.velocity;
     }
-    else if (this.keys.get("RIGHT").isDown) {
+    else if (right && right.isDown) {
       this.body.velocity.x = this.velocity;
     }
     else {
       this.body.velocity.x = 0;
     }
-    if (this.keys.get("UP").isDown) {
+    if (up && up.isDown) {
       this.body.velocity.y = -this.velocity;
     }
-    else if (this.keys.get("DOWN").isDown) {
+    else if (down && down.isDown) {
       this.body.velocity.y = this.velocity;
     }
     else {
@@ -60,7 +64,9 @@ export default class Player extends Phaser.GameObjects.Sprite {
   }
 
   private shouldStartAnimation(newAnimKey: string): boolean {
-    return (newAnimKey && !this.anims.isPlaying) || (newAnimKey && (!this.anims.currentAnim || this.anims.currentAnim.key !== newAnimKey));
+    const nothingWasPlaying: boolean = Boolean(newAnimKey) && !this.anims.isPlaying || !this.anims.currentAnim;
+    const isNewAnimation: boolean = Boolean(newAnimKey) && (this.anims.currentAnim && this.anims.currentAnim.key !== newAnimKey);
+    return nothingWasPlaying || isNewAnimation;
   }
 
   private getWalkingAnimKey(): string | undefined {

@@ -1,15 +1,18 @@
 import Player from '../objects/player/Player';
 import NPC from '../objects/npcs/NPC';
+import { MikeNPC, JohnnyNPC} from '../objects/npcs/npcs';
 
 export default class OpeningScene extends Phaser.Scene {
   private map: Phaser.Tilemaps.Tilemap;
   private terrainTileset: Phaser.Tilemaps.Tileset;
-  private eotlLayer: Phaser.Tilemaps.StaticTilemapLayer;
+  private waterLayer: Phaser.Tilemaps.StaticTilemapLayer;
   private groundLayer: Phaser.Tilemaps.StaticTilemapLayer;
   private overlappingLayer: Phaser.Tilemaps.StaticTilemapLayer;
   private obstructionsLayer: Phaser.Tilemaps.StaticTilemapLayer;
   private player: Player;
-  private mikeNpc: NPC;
+  private npcs: Phaser.GameObjects.Group;
+  private mikeNpc: MikeNPC;
+  private johnnyNpc: MikeNPC;
 
   constructor() {
     super({
@@ -24,12 +27,13 @@ export default class OpeningScene extends Phaser.Scene {
   create(): void {
     this.map = this.make.tilemap({ key: "openingLevel" });
     this.terrainTileset = this.map.addTilesetImage("outdoorsTerrainTiles");
-    this.eotlLayer = this.map.createStaticLayer(
-      "End of the world",
+    this.waterLayer = this.map.createStaticLayer(
+      "Water",
       this.terrainTileset,
       0,
       0
     );
+    this.waterLayer.setCollisionBetween(1, 10000, true);
     this.groundLayer = this.map.createStaticLayer(
       "Ground",
       this.terrainTileset,
@@ -59,19 +63,19 @@ export default class OpeningScene extends Phaser.Scene {
     this.player.body.collideWorldBounds = true;
     this.physics.add.overlap(
       this.player,
-      this.eotlLayer,
+      this.waterLayer,
       this.onCreatureEnteredWater,
       this.hasCreatureEnteredWater,
       this
     );
-
-    this.mikeNpc = new NPC(
-      'Mike',
-      this,
-      16 * 3,
-      16 * 34,
-      "playerSpritesheet"
-    );
+    
+    this.npcs = this.add.group();
+    this.mikeNpc = new MikeNPC(this, 16 * 3, 16 * 34);
+    this.mikeNpc.body.collideWorldBounds = true;
+    this.npcs.add(this.mikeNpc);
+    this.johnnyNpc = new JohnnyNPC(this, 16 * 6, 16 * 22);
+    this.johnnyNpc.body.collideWorldBounds = true;
+    this.npcs.add(this.johnnyNpc);
   }
 
   // FIXME: Checks collision for every tile, and returns varying indices in a burst. Should setIsSwimming only once per update
@@ -87,8 +91,17 @@ export default class OpeningScene extends Phaser.Scene {
     creature.setIsSwimming(true);
   }
 
+  onNpcCollision(npc: NPC, someLayer: Phaser.Tilemaps.StaticTilemapLayer) {
+    npc.onCollision();
+  }
+
   update(): void {
     this.physics.collide(this.player, this.obstructionsLayer);
+    this.physics.collide(this.npcs, this.obstructionsLayer, this.onNpcCollision);
+    this.physics.collide(this.npcs, this.waterLayer, this.onNpcCollision);
+    this.npcs.children.each(function(npc) {
+      npc.update();
+    }, this);
     this.player.update();
   }
 
