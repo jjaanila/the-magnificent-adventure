@@ -2,6 +2,7 @@ import 'phaser';
 import BootScene from "./scenes/BootScene";
 import MenuScene from "./scenes/MenuScene";
 import OpeningScene from "./scenes/OpeningScene";
+import DialogPlugin from "./DialogPlugin";
 
 class MagnificentGame {
   config: GameConfig;
@@ -20,6 +21,11 @@ class MagnificentGame {
       scene: [BootScene, MenuScene, OpeningScene],
       render: {
         pixelArt: true
+      },
+      plugins: {
+        scene: [
+            { key: 'DialogPlugin', plugin: DialogPlugin, start: false, mapping: 'dialog' } as PluginObjectItem
+        ]
       }
     };
   }

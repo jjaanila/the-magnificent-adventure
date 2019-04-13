@@ -19,6 +19,3 @@ DONE    - Base for "wandering" NPCs
       - More maps
 
 Lowest priority
-
-DONE
-- Structure/obstruction collision: block.

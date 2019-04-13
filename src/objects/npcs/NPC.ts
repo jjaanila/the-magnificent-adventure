@@ -1,4 +1,5 @@
-import { NPCAction, NPCActionWait, NPCActionTravel } from './npcActions';
+import { NPCAction, NPCActionWait, NPCActionTravel } from "./npcActions";
+import Dialog from "../../Dialog";
 
 export default class NPC extends Phaser.GameObjects.Sprite {
   private MAX_WANDER_WAIT_SECONDS = 3;
@@ -142,5 +143,9 @@ export default class NPC extends Phaser.GameObjects.Sprite {
   public setIsSwimming(isSwimming: boolean): void {
     this.isSwimming = isSwimming;
     this.velocity = this.isSwimming ? this.swimmingVelocity : this.walkingVelocity;
+  }
+
+  public getDialog(): Dialog | null {
+    return null;
   }
 }

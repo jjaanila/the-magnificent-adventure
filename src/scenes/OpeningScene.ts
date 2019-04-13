@@ -12,7 +12,7 @@ export default class OpeningScene extends Phaser.Scene {
   private player: Player;
   private npcs: Phaser.GameObjects.Group;
   private mikeNpc: MikeNPC;
-  private johnnyNpc: MikeNPC;
+  private johnnyNpc: JohnnyNPC;
 
   constructor() {
     super({
