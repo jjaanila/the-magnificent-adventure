@@ -48,22 +48,25 @@ export class DialogNode {
 export default class Dialog {
   private nodes: DialogNode[];
   private links: DialogNodeLink[];
-  private currentNode: DialogNode;
+  public currentStep: DialogStep;
 
   constructor(specs: DialogSpec, startNode?: DialogNode) {
     this.nodes = specs.nodes;
     this.links = specs.links;
+    let currentNode: DialogNode;
     if (startNode) {
-      this.currentNode = startNode;
+      currentNode = startNode;
     } else {
-      this.currentNode = this.getStartNode();
+      currentNode = this.getStartNode();
     }
+    this.currentStep = {
+      currentNode: currentNode,
+      nextNodes: []
+    };
+    this.currentStep.nextNodes = this.getNextNodes();
   }
 
   private getStartNode(): DialogNode {
-    if (this.currentNode) {
-      return this.currentNode;
-    }
     for (const node of this.nodes) {
       let hasPreviousNode = false;
       for (const link of this.links) {
@@ -90,25 +93,24 @@ export default class Dialog {
   private getNextNodes(): DialogNode[] {
     const nextNodes: DialogNode[] = [];
     for (const link of this.links) {
-      if (this.currentNode.id === link.from && link.to) {
+      if ((this.currentStep.currentNode.id === link.from) && link.to) {
         nextNodes.push(this.getNode(link.to));
       }
     }
     return nextNodes;
   }
 
-  start(): DialogStep {
-    return {
-      currentNode: this.currentNode,
-      nextNodes: this.getNextNodes()
-    };
+  public debug() {
+
   }
 
-  answer(nextNodeId: DialogNodeId) {
-    this.currentNode = this.getNode(nextNodeId);
-    return {
-      currentNode: this.currentNode,
-      nextNodes: this.getNextNodes()
-    };
+  public start(): DialogStep {
+    return this.currentStep;
+  }
+
+  public answer(nextNodeId: DialogNodeId) {
+    this.currentStep.currentNode = this.getNode(nextNodeId);
+    this.currentStep.nextNodes = this.getNextNodes();
+    return this.currentStep;
   }
 }
