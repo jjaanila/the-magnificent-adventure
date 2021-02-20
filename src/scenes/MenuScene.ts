@@ -2,9 +2,9 @@ import DialogPlugin from "../DialogPlugin";
 import Dialog, { DialogNode, DialogSpec } from "../Dialog";
 
 export default class MenuScene extends Phaser.Scene {
-    private startKey?: Phaser.Input.Keyboard.Key;
+    private startKey: Phaser.Input.Keyboard.Key;
     private bitmapTexts: Phaser.GameObjects.BitmapText[] = [];
-    private dialog?: DialogPlugin;
+    private dialog: DialogPlugin;
     private isStarted: boolean = false;
 
     constructor() {
@@ -108,7 +108,7 @@ It's needless to say that life is hard. Luckily, so are you. You are a peasant w
             url: "../DialogPlugin.ts",
             sceneKey: "dialog",
         });
-        this.dialog?.on("end", () => {
+        this.dialog.on("end", () => {
             this.scene.start("OpeningScene");
         });
     }
@@ -126,13 +126,13 @@ It's needless to say that life is hard. Luckily, so are you. You are a peasant w
     }
 
     public update(): void {
-        if (this.startKey?.isDown) {
+        if (this.startKey.isDown) {
             if (this.isStarted) {
                 return;
             }
             this.isStarted = true;
             this.bitmapTexts[0].setVisible(false);
-            this.dialog?.open(this.getDialog());
+            this.dialog.open(this.getDialog());
         }
     }
 }

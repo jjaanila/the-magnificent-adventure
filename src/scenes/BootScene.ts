@@ -1,8 +1,8 @@
 import AnimationHelper from "../AnimationHelper";
 
 export default class BootScene extends Phaser.Scene {
-    private loadingBar?: Phaser.GameObjects.Graphics;
-    private progressBar?: Phaser.GameObjects.Graphics;
+    private loadingBar: Phaser.GameObjects.Graphics;
+    private progressBar: Phaser.GameObjects.Graphics;
     private animationHelperInstance?: AnimationHelper;
 
     constructor() {
@@ -20,9 +20,9 @@ export default class BootScene extends Phaser.Scene {
         this.load.on(
             "progress",
             (value: number) => {
-                this.progressBar?.clear();
-                this.progressBar?.fillStyle(0xfff6d3, 1);
-                this.progressBar?.fillRect(
+                this.progressBar.clear();
+                this.progressBar.fillStyle(0xfff6d3, 1);
+                this.progressBar.fillRect(
                     this.cameras.main.width / 4,
                     this.cameras.main.height / 2 - 16,
                     (this.cameras.main.width / 2) * value,
@@ -37,8 +37,8 @@ export default class BootScene extends Phaser.Scene {
             "complete",
             () => {
                 this.animationHelperInstance = new AnimationHelper(this, this.loadAnimations());
-                this.progressBar?.destroy();
-                this.loadingBar?.destroy();
+                this.progressBar.destroy();
+                this.loadingBar.destroy();
             },
             this
         );
