@@ -1,23 +1,23 @@
 {
-  "name": "the-magnificent-adventure",
-  "version": "1.0.0",
-  "description": "The most magnificent RPG of them all.",
-  "main": "index.js",
-  "scripts": {
-    "start": "webpack --mode development && webpack-dev-server --mode development",
-    "build": "webpack --mode production && webpack-dev-server --mode production"
-  },
-  "author": "Janne Jaanila",
-  "license": "MIT",
-  "devDependencies": {
-    "expose-loader": "0.7.5",
-    "ts-loader": "5.3.3",
-    "typescript": "3.2.4",
-    "webpack": "4.29.0",
-    "webpack-cli": "3.2.1",
-    "webpack-dev-server": "3.1.14"
-  },
-  "dependencies": {
-    "phaser": "3.15.1"
-  }
+    "name": "the-magnificent-adventure",
+    "version": "1.0.0",
+    "description": "The most magnificent RPG of them all.",
+    "main": "index.js",
+    "scripts": {
+        "start": "webpack serve --mode development",
+        "build": "webpack build --mode production"
+    },
+    "author": "Janne Jaanila",
+    "license": "MIT",
+    "devDependencies": {
+        "expose-loader": "^0.7.5",
+        "ts-loader": "^5.3.3",
+        "typescript": "^3.9.9",
+        "webpack": "^5.23.0",
+        "webpack-cli": "^4.5.0",
+        "webpack-dev-server": "^3.11.2"
+    },
+    "dependencies": {
+        "phaser": "^3.52.0"
+    }
 }

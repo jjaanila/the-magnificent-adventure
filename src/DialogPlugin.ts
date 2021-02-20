@@ -1,4 +1,4 @@
-import Dialog, { DialogNode, DialogStep } from './Dialog';
+import Dialog, { DialogNode, DialogStep } from "./Dialog";
 
 type FramePosition = {
     x: number;
@@ -7,7 +7,7 @@ type FramePosition = {
     height: number;
 };
 
-export type DialogEventType = 'end';
+export type DialogEventType = "end";
 
 export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
     private isVisible: boolean = false;
@@ -23,12 +23,12 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
     private dialog: Dialog;
     private eventEmitter: Phaser.Events.EventEmitter;
 
-    constructor (scene: Phaser.Scene, pluginManager: Phaser.Plugins.PluginManager) {
+    constructor(scene: Phaser.Scene, pluginManager: Phaser.Plugins.PluginManager) {
         super(scene, pluginManager);
 
         this.eventEmitter = new Phaser.Events.EventEmitter();
         //  Register our new Game Object type
-        pluginManager.registerGameObject('dialog', this.start);
+        pluginManager.registerGameObject("dialog", this.start);
     }
 
     private initInput() {
@@ -43,7 +43,7 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
             Phaser.Input.Keyboard.KeyCodes.EIGHT,
             Phaser.Input.Keyboard.KeyCodes.NINE,
         ];
-        this.scene.input.keyboard.on('keydown', (event: KeyboardEvent) => {
+        this.scene.input.keyboard.on("keydown", (event: KeyboardEvent) => {
             const nodeIdx = keyNames.indexOf(event.keyCode);
             if (nodeIdx == -1) {
                 return;
@@ -63,9 +63,9 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
     private getFramePosition() {
         return {
             x: this.borderWidth,
-            y: this.scene.cameras.main.height - (this.scene.cameras.main.height * 0.3) - this.borderWidth,
+            y: this.scene.cameras.main.height - this.scene.cameras.main.height * 0.3 - this.borderWidth,
             width: this.scene.cameras.main.width - this.borderWidth * 2,
-            height: this.scene.cameras.main.height * 0.3
+            height: this.scene.cameras.main.height * 0.3,
         };
     }
 
@@ -77,17 +77,17 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
         this.line = this.scene.make.text({
             x: this.framePosition.x,
             y: this.framePosition.y,
-            text: '',
+            text: "",
             style: {
-                fixedHeight: 20
-            }
+                fixedHeight: 20,
+            },
         });
         this.line.setPadding(this.framePadding, this.framePadding, this.framePadding, this.framePadding);
         this.line.setFixedSize(this.framePosition.width - 40, 40);
         this.line.setWordWrapWidth(this.framePosition.width - 20);
         let eventCounter = 0;
         this.textRenderingEvent = this.scene.time.addEvent({
-            delay: 150 - (this.textRenderingSpeed * 30),
+            delay: 150 - this.textRenderingSpeed * 30,
             callback: () => {
                 eventCounter++;
                 if (text) {
@@ -99,8 +99,8 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
                 }
             },
             callbackScope: this,
-            loop: true
-          });
+            loop: true,
+        });
     }
 
     private onLineRenderingEnd() {
@@ -111,14 +111,14 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
         for (const option of this.options) {
             option.destroy();
         }
-        if (nextNodes.length === 0){
+        if (nextNodes.length === 0) {
             const option = this.scene.make.text({
                 x: this.framePosition.x,
                 y: this.framePosition.y + 170,
                 text: `${1}. (Leave)`,
                 style: {
-                    fixedWidth: this.scene.cameras.main.width - 40
-                }
+                    fixedWidth: this.scene.cameras.main.width - 40,
+                },
             });
             option.setPadding(this.framePadding, this.framePadding, this.framePadding, this.framePadding);
             this.options.push(option);
@@ -129,8 +129,8 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
                 y: this.framePosition.y + 170 - (nextNodes.length - i - 1) * this.lineHeight,
                 text: `${i + 1}. ${nextNodes[i].playerAnswer}`,
                 style: {
-                    fixedWidth: this.scene.cameras.main.width - 40
-                }
+                    fixedWidth: this.scene.cameras.main.width - 40,
+                },
             });
             option.setPadding(this.framePadding, this.framePadding, this.framePadding, this.framePadding);
             this.options.push(option);
@@ -138,8 +138,13 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
     }
 
     private renderFrame() {
-        const rect = new Phaser.Geom.Rectangle(this.framePosition.x, this.framePosition.y, this.framePosition.width, this.framePosition.height);
-        this.graphics = this.scene.add.graphics()
+        const rect = new Phaser.Geom.Rectangle(
+            this.framePosition.x,
+            this.framePosition.y,
+            this.framePosition.width,
+            this.framePosition.height
+        );
+        this.graphics = this.scene.add.graphics();
         this.graphics.lineStyle(this.borderWidth, 0x6e4c19, 1);
         this.graphics.strokeRectShape(rect);
         this.graphics.fillStyle(0x473110, 1);
@@ -149,7 +154,7 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
     private renderStep(step: DialogStep) {
         this.framePosition = this.getFramePosition();
         this.renderFrame();
-        this.renderLine(step.currentNode.line || "");
+        this.renderLine(step.currentNode.line || "");
     }
 
     private close() {
@@ -158,7 +163,7 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
         }
         this.isVisible = false;
         this.graphics.visible = this.isVisible;
-        this.eventEmitter.emit('end');
+        this.eventEmitter.emit("end");
     }
 
     public open(dialog: Dialog) {
