@@ -1,6 +1,6 @@
 import Dialog, { DialogNode, DialogStep } from "./Dialog";
 
-type FramePosition = {
+type Box = {
     x: number;
     y: number;
     width: number;
@@ -14,7 +14,7 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
     private lineHeight = 20;
     private borderWidth = 10;
     private framePadding = 5;
-    private framePosition: FramePosition;
+    private framePosition: Box;
     private textRenderingSpeed = 100;
     private graphics: Phaser.GameObjects.Graphics;
     private line: Phaser.GameObjects.Text;
@@ -22,6 +22,7 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
     private textRenderingEvent: Phaser.Time.TimerEvent;
     private dialog: Dialog;
     private eventEmitter: Phaser.Events.EventEmitter;
+    private isDragging = false;
 
     constructor(scene: Phaser.Scene, pluginManager: Phaser.Plugins.PluginManager) {
         super(scene, pluginManager);
@@ -32,7 +33,7 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
     }
 
     private initInput() {
-        const keyNames = [
+        const optionKeys = [
             Phaser.Input.Keyboard.KeyCodes.ONE,
             Phaser.Input.Keyboard.KeyCodes.TWO,
             Phaser.Input.Keyboard.KeyCodes.THREE,
@@ -44,7 +45,7 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
             Phaser.Input.Keyboard.KeyCodes.NINE,
         ];
         this.scene.input.keyboard.on("keydown", (event: KeyboardEvent) => {
-            const nodeIdx = keyNames.indexOf(event.keyCode);
+            const nodeIdx = optionKeys.indexOf(event.keyCode);
             if (nodeIdx == -1) {
                 return;
             }
@@ -60,13 +61,36 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
         });
     }
 
-    private getFramePosition() {
-        return {
-            x: this.borderWidth,
-            y: this.scene.cameras.main.height - this.scene.cameras.main.height * 0.3 - this.borderWidth,
-            width: this.scene.cameras.main.width - this.borderWidth * 2,
-            height: this.scene.cameras.main.height * 0.3,
-        };
+    private isPointerInsideFrame(pointer: Phaser.Input.Pointer) {
+        return (
+            pointer.x > this.framePosition.x &&
+            pointer.x < this.framePosition.x + this.framePosition.width &&
+            pointer.y > this.framePosition.y &&
+            pointer.y < this.framePosition.y + this.framePosition.height
+        );
+    }
+
+    private enableScrolling() {
+        const zone = this.scene.add
+            .zone(this.framePosition.x, this.framePosition.y, this.framePosition.width, this.framePosition.height)
+            .setOrigin(0)
+            .setInteractive();
+        zone.on("pointerdown", () => {
+            this.isDragging = true;
+        });
+        this.scene.input.on("pointerup", () => {
+            this.isDragging = false;
+        });
+        this.scene.input.on("pointermove", (pointer: Phaser.Input.Pointer) => {
+            if (this.isDragging) {
+                this.line.y += pointer.position.y - pointer.prevPosition.y;
+                this.line.y = Phaser.Math.Clamp(
+                    this.line.y,
+                    this.framePosition.y - this.framePosition.height / 2,
+                    this.framePosition.y
+                );
+            }
+        });
     }
 
     private renderLine(text: string) {
@@ -78,13 +102,28 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
             x: this.framePosition.x,
             y: this.framePosition.y,
             text: "",
-            style: {
-                fixedHeight: 20,
-            },
         });
+        const shape = this.scene.make.graphics({});
+        shape.fillRect(
+            // Top mask
+            this.framePosition.x,
+            0,
+            this.framePosition.width,
+            this.framePosition.y
+        );
+        shape.fillRect(
+            // Bottom mask
+            this.framePosition.x,
+            this.framePosition.y + this.framePosition.height * (2 / 3),
+            this.framePosition.width,
+            this.framePosition.height
+        );
+        const mask = new Phaser.Display.Masks.GeometryMask(this.scene, shape);
+        mask.invertAlpha = true;
+        this.line.setMask(mask);
+        const lineWindowWidth = this.framePosition.width - 40;
         this.line.setPadding(this.framePadding, this.framePadding, this.framePadding, this.framePadding);
-        this.line.setFixedSize(this.framePosition.width - 40, 40);
-        this.line.setWordWrapWidth(this.framePosition.width - 20);
+        this.line.setWordWrapWidth(lineWindowWidth);
         let eventCounter = 0;
         this.textRenderingEvent = this.scene.time.addEvent({
             delay: 150 - this.textRenderingSpeed * 30,
@@ -96,6 +135,7 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
                 if (eventCounter === text.length) {
                     this.textRenderingEvent.destroy();
                     this.onLineRenderingEnd();
+                    this.enableScrolling();
                 }
             },
             callbackScope: this,
@@ -149,6 +189,16 @@ export default class DialogPlugin extends Phaser.Plugins.ScenePlugin {
         this.graphics.strokeRectShape(rect);
         this.graphics.fillStyle(0x473110, 1);
         this.graphics.fillRectShape(rect);
+    }
+
+    private getFramePosition() {
+        const height = this.scene.cameras.main.height * 0.3;
+        return {
+            x: this.borderWidth,
+            y: this.scene.cameras.main.height - height - this.borderWidth,
+            width: this.scene.cameras.main.width - this.borderWidth * 2,
+            height: height,
+        };
     }
 
     private renderStep(step: DialogStep) {
