@@ -11,7 +11,7 @@
     "license": "MIT",
     "devDependencies": {
         "expose-loader": "^0.7.5",
-        "ts-loader": "^5.3.3",
+        "ts-loader": "^9.4.2",
         "typescript": "^3.9.9",
         "webpack": "^5.23.0",
         "webpack-cli": "^4.5.0",
